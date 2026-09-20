@@ -17,6 +17,8 @@ agent = create_sql_agent(
     verbose=True,
 )
 
-response = agent.invoke({"input": "What is the maximum price purchase made."})
+question = input("Ask a question")
+
+response = agent.invoke({"input": question})
 
 print(response["output"])
