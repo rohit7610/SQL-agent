@@ -31,18 +31,39 @@ prompt = ChatPromptTemplate.from_messages(
 )
 
 st.title("SQL Agent")
-input_text = st.text_input("ask the question")
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-output_parser = StrOutputParser()
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.write(message["content"])
 
-response = agent.invoke({
-    "messages": [
-        {
-           "role": "user",
-            "content": input_text
-        }
-    ] 
-})
+input_text = st.chat_input("ask the question")
 
 if input_text:
-    st.write(response["messages"][-1].content)
+    st.session_state.messages.append({
+        "role":"user",
+        "content":input_text
+    })
+
+
+    with st.chat_message("user"):
+        st.write(input_text)
+
+    response = agent.invoke({
+        "messages":[{
+            "role":"user",
+            "content":input_text
+        }
+        ]
+    })
+
+    answer = response["messages"][-1].content
+
+    st.session_state.messages.append({
+        "role":"assistant",
+        "content":answer
+    })
+
+    with st.chat_message("assistant"):
+      st.write(answer)
